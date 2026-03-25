@@ -16,13 +16,18 @@ export function ActionBar({ currentStep, onPrevious, onNext, onSave }: Props) {
       >
         ← Précédent
       </button>
-      <button
-        onClick={onSave}
-        className="px-4 py-2 text-sm font-medium text-white bg-[#be9f56] rounded-xl hover:bg-[#caa253] transition-colors shadow-sm"
-        style={{ fontFamily: "'Poppins', sans-serif" }}
-      >
-        Sauvegarder
-      </button>
+      <div className="flex flex-col items-center gap-1">
+        <button
+          onClick={onSave}
+          className="px-4 py-2 text-sm font-medium text-white bg-[#be9f56] rounded-xl hover:bg-[#caa253] transition-colors shadow-sm"
+          style={{ fontFamily: "'Poppins', sans-serif" }}
+        >
+          Sauvegarder
+        </button>
+        <span className="text-[9px] text-gray-400" style={{ fontFamily: "'Lato', sans-serif" }}>
+          Conçu par <a href="https://growup-consulting.fr" target="_blank" rel="noopener noreferrer" className="hover:text-[#be9f56] transition-colors">Grow Up Consulting</a>
+        </span>
+      </div>
       <button
         onClick={onNext}
         disabled={currentStep >= 8}

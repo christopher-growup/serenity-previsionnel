@@ -83,6 +83,9 @@ export default function WelcomeScreen({
             />
           </label>
         </div>
+        <p className="mt-8 text-xs text-gray-400" style={{ fontFamily: "'Lato', sans-serif" }}>
+          Conçu par <a href="https://growup-consulting.fr" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#be9f56] transition-colors underline">Grow Up Consulting</a> pour Serenity Institut
+        </p>
       </div>
     </div>
   );
