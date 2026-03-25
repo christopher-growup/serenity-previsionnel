@@ -57,4 +57,9 @@ export const BAREMES = {
 
   flatTax: 0.314,
   tauxTVA: 0.20,
+
+  acre: {
+    tauxReduction: 0.50, // 50% reduction on cotisations
+    dureeAnnees: 1, // applies for first year only
+  },
 } as const;

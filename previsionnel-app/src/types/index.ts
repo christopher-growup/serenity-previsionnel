@@ -21,6 +21,7 @@ export interface Statut {
   statutJuridique: StatutJuridique;
   typeGerance?: TypeGerance;
   versementLiberatoire?: boolean;
+  acre?: boolean; // Aide à la Création ou Reprise d'Entreprise
 }
 
 export interface Offre {
@@ -71,6 +72,8 @@ export interface RemunerationDirigeant {
   salaireBrutAnnuel: number;
   augmentationAnnuelle: number;
   partRevenusRetires?: number;
+  moisDebutSalaire?: number; // 1-36, mois à partir duquel le dirigeant se verse un salaire
+  autresRevenus?: string; // description des autres sources de revenus si pas de salaire
 }
 
 export interface Salarie {
@@ -119,10 +122,15 @@ export interface TresorerieMensuelle {
   tresorerieDebut: number;
   encaissements: number;
   decaissementsCharges: number;
+  decaissementsChargesVariables: number;
   decaissementsPersonnel: number;
   decaissementsInvestissements: number;
   remboursementsEmprunts: number;
   financementsRecus: number;
+  decaissementsImpot: number;
+  tvaCollectee: number;      // TVA collected from clients
+  tvaDeductible: number;     // TVA paid on purchases
+  tvaAReverser: number;      // Net TVA payment to state (quarterly)
   tresorerieFin: number;
 }
 

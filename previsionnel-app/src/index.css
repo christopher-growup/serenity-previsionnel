@@ -1,1 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&family=Lato:wght@300;400;700&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --color-navy: #082742;
+  --color-navy-light: #0d3a5c;
+  --color-gold: #be9f56;
+  --color-gold-light: #caa253;
+  --color-gold-pale: #f5f0e4;
+  --color-warm-white: #f8f7f5;
+  --color-warm-gray: #e8e6e1;
+  --font-heading: 'Montserrat', sans-serif;
+  --font-sub: 'Poppins', sans-serif;
+  --font-body: 'Lato', sans-serif;
+  --radius-card: 20px;
+  --radius-button: 12px;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-navy);
+  background-color: var(--color-warm-white);
+}
+
+h1, h2, h3 {
+  font-family: var(--font-heading);
+}
+
+button, select, .font-sub {
+  font-family: var(--font-sub);
+}

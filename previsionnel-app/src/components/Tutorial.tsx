@@ -40,14 +40,25 @@ export default function Tutorial({ onComplete }: TutorialProps) {
         {/* Skip button */}
         <button
           onClick={onComplete}
-          className="absolute top-4 right-4 text-sm text-gray-400 hover:text-gray-600 transition-colors"
+          className="absolute top-4 right-4 text-sm text-gray-400 hover:text-[#082742] transition-colors"
+          style={{ fontFamily: "'Poppins', sans-serif" }}
         >
           Passer
         </button>
 
+        {/* Logo */}
+        <div className="flex justify-center pt-2">
+          <img src="/logo.svg" alt="Serenity Institut" className="h-10 mx-auto" />
+        </div>
+
         {/* Content */}
-        <div className="flex flex-col gap-4 pt-2">
-          <h2 className="text-2xl font-bold text-gray-900 leading-snug">{title}</h2>
+        <div className="flex flex-col gap-4">
+          <h2
+            className="text-2xl font-bold text-[#082742] leading-snug"
+            style={{ fontFamily: "'Montserrat', sans-serif" }}
+          >
+            {title}
+          </h2>
           <p className="text-gray-600 leading-relaxed">{body}</p>
         </div>
 
@@ -58,7 +69,7 @@ export default function Tutorial({ onComplete }: TutorialProps) {
               key={i}
               onClick={() => setCurrent(i)}
               className={`w-2.5 h-2.5 rounded-full transition-colors ${
-                i === current ? 'bg-blue-600' : 'bg-gray-300 hover:bg-gray-400'
+                i === current ? 'bg-[#be9f56]' : 'bg-gray-300 hover:bg-gray-400'
               }`}
               aria-label={`Écran ${i + 1}`}
             />
@@ -68,7 +79,8 @@ export default function Tutorial({ onComplete }: TutorialProps) {
         {/* Navigation button */}
         <button
           onClick={handleNext}
-          className="w-full py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-colors"
+          className="w-full py-3 px-6 bg-[#be9f56] hover:bg-[#caa253] text-white font-semibold rounded-xl transition-colors uppercase tracking-widest"
+          style={{ fontFamily: "'Poppins', sans-serif" }}
         >
           {isLast ? 'Commencer' : 'Suivant'}
         </button>

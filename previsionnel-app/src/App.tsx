@@ -104,7 +104,7 @@ export default function App() {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <ProgressBar currentStep={data.etapeCourante} onStepClick={goToStep} />
       <div className="flex flex-1">
-        <main className="flex-1 max-w-3xl mx-auto px-6 py-8 pb-24">
+        <main className={`flex-1 mx-auto py-8 pb-24 ${data.etapeCourante === 8 ? 'max-w-7xl px-4' : 'max-w-3xl px-6'}`}>
           {showSaveReminder && <div className="mb-4"><SaveReminder onSave={handleSave} /></div>}
           {stepComponents[data.etapeCourante]}
         </main>
