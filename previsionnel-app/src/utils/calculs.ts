@@ -1,4 +1,4 @@
-import { Previsionnel, Synthese, ResultatAnnuel, TresorerieMensuelle, IndicateursClés, ChargeFix } from '../types';
+import type { Previsionnel, Synthese, ResultatAnnuel, TresorerieMensuelle, ChargeFix } from '../types';
 import { calculerCotisationsDirigeant, calculerCoutEmployeur } from './calculs-cotisations';
 import { calculerIS, calculerIR, calculerImpotMicro } from './calculs-impots';
 import { calculerAmortissements } from './calculs-amortissement';
@@ -23,7 +23,7 @@ export function calculerEncaissementsMensuels(data: Previsionnel): number[] {
     for (let m = 0; m < 36; m++) {
       const montantTotal = (ventes[m] || 0) * offre.prixUnitaireHT;
       if (montantTotal === 0) continue;
-      const acompte = montantTotal * offre.acomptePourcent;
+      const acompte = montantTotal * offre.acomptePourcent / 100;
       encaissements[m] += acompte;
       const solde = montantTotal - acompte;
       const moisEncaissement = m + offre.delaiPaiementMois;
@@ -50,8 +50,8 @@ export function calculerChargesAnnuelles(chargesFixes: ChargeFix[]): [number, nu
   const totals: [number, number, number] = [0, 0, 0];
   for (const charge of chargesFixes) {
     totals[0] += charge.montantAnnuel;
-    totals[1] += charge.montantAnnuel * (1 + charge.evolutionAn2);
-    totals[2] += charge.montantAnnuel * (1 + charge.evolutionAn2) * (1 + charge.evolutionAn3);
+    totals[1] += charge.montantAnnuel * (1 + charge.evolutionAn2 / 100);
+    totals[2] += charge.montantAnnuel * (1 + charge.evolutionAn2 / 100) * (1 + charge.evolutionAn3 / 100);
   }
   return totals;
 }
@@ -66,16 +66,16 @@ function calculerPersonnelAnnuel(
 
   for (let a = 0; a < 3; a++) {
     const salaire = data.remunerationDirigeant.salaireBrutAnnuel *
-      Math.pow(1 + data.remunerationDirigeant.augmentationAnnuelle, a);
+      Math.pow(1 + data.remunerationDirigeant.augmentationAnnuelle / 100, a);
 
     if (data.statut.statutJuridique === 'micro') {
-      totals[a] += calculerCotisationsDirigeant(data.statut, data.projet.typeActivite, caAnnuel[a], 0);
+      totals[a] += calculerCotisationsDirigeant(data.statut, data.projet.typeActivite, caAnnuel[a], 0, { acre: data.statut.acre, annee: a + 1 });
     } else if (data.statut.statutJuridique === 'ei') {
       const beneficeEstime = Math.max(0, caAnnuel[a] - chargesExtAnnuelles[a] - chargesVarAnnuelles[a]);
-      const cotisations = calculerCotisationsDirigeant(data.statut, data.projet.typeActivite, beneficeEstime, 0);
+      const cotisations = calculerCotisationsDirigeant(data.statut, data.projet.typeActivite, beneficeEstime, 0, { acre: data.statut.acre, annee: a + 1 });
       totals[a] += cotisations;
     } else {
-      totals[a] += salaire + calculerCotisationsDirigeant(data.statut, data.projet.typeActivite, 0, salaire);
+      totals[a] += salaire + calculerCotisationsDirigeant(data.statut, data.projet.typeActivite, 0, salaire, { acre: data.statut.acre, annee: a + 1 });
     }
   }
 
@@ -84,7 +84,7 @@ function calculerPersonnelAnnuel(
       const anneeProjet = a + 1;
       if (anneeProjet < sal.dateEmbauche.annee) continue;
       const anneesExperience = anneeProjet - sal.dateEmbauche.annee;
-      const salaire = sal.salaireBrutAnnuel * Math.pow(1 + sal.augmentationAnnuelle, anneesExperience);
+      const salaire = sal.salaireBrutAnnuel * Math.pow(1 + sal.augmentationAnnuelle / 100, anneesExperience);
       let prorata = 1;
       if (anneeProjet === sal.dateEmbauche.annee) {
         prorata = (5 - sal.dateEmbauche.trimestre) / 4;
@@ -164,18 +164,64 @@ export function calculerSynthese(data: Previsionnel): Synthese {
   const totalFinancements = data.financements.capital + data.financements.apports +
     data.financements.emprunts.reduce((s, e) => s + e.montant, 0) + data.financements.subventions;
 
+  // Split personnel costs into dirigeant vs salariés for moisDebutSalaire handling
+  const dirigeantAnnuel: [number, number, number] = [0, 0, 0];
+  const salariesAnnuel: [number, number, number] = [0, 0, 0];
+
+  for (let a = 0; a < 3; a++) {
+    const salaire = data.remunerationDirigeant.salaireBrutAnnuel *
+      Math.pow(1 + data.remunerationDirigeant.augmentationAnnuelle / 100, a);
+
+    if (data.statut.statutJuridique === 'micro') {
+      dirigeantAnnuel[a] = calculerCotisationsDirigeant(data.statut, data.projet.typeActivite, caAnnuel[a], 0, { acre: data.statut.acre, annee: a + 1 });
+    } else if (data.statut.statutJuridique === 'ei') {
+      const beneficeEstime = Math.max(0, caAnnuel[a] - chargesExternes[a] - chargesVariables[a]);
+      dirigeantAnnuel[a] = calculerCotisationsDirigeant(data.statut, data.projet.typeActivite, beneficeEstime, 0, { acre: data.statut.acre, annee: a + 1 });
+    } else {
+      dirigeantAnnuel[a] = salaire + calculerCotisationsDirigeant(data.statut, data.projet.typeActivite, 0, salaire, { acre: data.statut.acre, annee: a + 1 });
+    }
+
+    for (const sal of data.salaries) {
+      const anneeProjet = a + 1;
+      if (anneeProjet < sal.dateEmbauche.annee) continue;
+      const anneesExperience = anneeProjet - sal.dateEmbauche.annee;
+      const salaireSal = sal.salaireBrutAnnuel * Math.pow(1 + sal.augmentationAnnuelle / 100, anneesExperience);
+      let prorata = 1;
+      if (anneeProjet === sal.dateEmbauche.annee) {
+        prorata = (5 - sal.dateEmbauche.trimestre) / 4;
+      }
+      salariesAnnuel[a] += calculerCoutEmployeur(salaireSal) * prorata;
+    }
+  }
+
   const tresorerie: TresorerieMensuelle[] = [];
   let tresoDebut = 0;
 
+  // moisDebutSalaire is 1-indexed (e.g. 4 = salary starts month 4); convert to 0-indexed
+  const moisDebutSalaire = (data.remunerationDirigeant.moisDebutSalaire ?? 1) - 1;
+
+  // TVA applies for all statuts except micro-entreprise
+  const appliquerTVA = data.statut.statutJuridique !== 'micro';
+  const tauxTVACharges = 0.20; // standard rate applied to charges and investments
+  let tvaCumulMois = 0; // accumulates net TVA month by month, paid quarterly
+
   for (let m = 0; m < 36; m++) {
     const annee = Math.floor(m / 12);
+    const moisDansAnnee = m % 12; // 0-indexed within the year
     const encaissements = encaissementsMensuels[m];
     const decCharges = chargesExternes[annee] / 12;
-    const decPersonnel = personnel[annee] / 12;
     const decChargesVar = chargesVarMensuelles[m];
 
+    // Dirigeant: only paid from moisDebutSalaire onwards (applies to year 0 only)
+    const moisActifsDirigeant = annee === 0 ? Math.max(1, 12 - moisDebutSalaire) : 12;
+    const decDirigeant = (annee === 0 ? moisDansAnnee >= moisDebutSalaire : true)
+      ? dirigeantAnnuel[annee] / moisActifsDirigeant
+      : 0;
+    const decSalaries = salariesAnnuel[annee] / 12;
+    const decPersonnel = decDirigeant + decSalaries;
+
     let decInvest = 0;
-    const trimestre = Math.floor((m % 12) / 3) + 1;
+    const trimestre = Math.floor(moisDansAnnee / 3) + 1;
     const anneeProjet = annee + 1;
     if (m % 3 === 0) {
       decInvest = data.investissements
@@ -185,17 +231,56 @@ export function calculerSynthese(data: Previsionnel): Synthese {
 
     const financements = m === 0 ? totalFinancements : 0;
 
-    const tresoFin = tresoDebut + financements + encaissements - decCharges - decPersonnel - decChargesVar - decInvest - remboursementsMensuels[m];
+    // Impôt: simplified as annual payment in last month of each year
+    let decImpot = 0;
+    if (moisDansAnnee === 11) { // last month of year (0-indexed)
+      const anneeResult = resultatsAnnuels[annee];
+      if (anneeResult) decImpot = Math.max(0, anneeResult.impot);
+    }
+
+    // TVA collectée on sales this month (based on CA, not encaissements, simplified)
+    let tvaCollectee = 0;
+    if (appliquerTVA) {
+      for (const offre of data.offres) {
+        const ventes = data.ventes[offre.id] || [];
+        tvaCollectee += (ventes[m] || 0) * offre.prixUnitaireHT * offre.tauxTVA;
+      }
+    }
+
+    // TVA déductible on charges and investments this month
+    const tvaDeductible = appliquerTVA
+      ? (decCharges + decChargesVar + decInvest) * tauxTVACharges
+      : 0;
+
+    // TVA nette à reverser — paiement mensuel
+    let tvaAReverser = 0;
+    if (appliquerTVA) {
+      tvaCumulMois += tvaCollectee - tvaDeductible;
+      if (tvaCumulMois > 0) {
+        tvaAReverser = tvaCumulMois;
+        tvaCumulMois = 0;
+      }
+      // Si tvaCumulMois < 0, c'est un crédit de TVA reporté au mois suivant
+    }
+
+    const tresoFin = tresoDebut + financements + encaissements
+      - decCharges - decChargesVar - decPersonnel - decInvest
+      - remboursementsMensuels[m] - decImpot - tvaAReverser;
 
     tresorerie.push({
       mois: m,
       tresorerieDebut: Math.round(tresoDebut * 100) / 100,
       encaissements,
       decaissementsCharges: decCharges,
+      decaissementsChargesVariables: decChargesVar,
       decaissementsPersonnel: decPersonnel,
       decaissementsInvestissements: decInvest,
       remboursementsEmprunts: remboursementsMensuels[m],
       financementsRecus: financements,
+      decaissementsImpot: decImpot,
+      tvaCollectee,
+      tvaDeductible,
+      tvaAReverser,
       tresorerieFin: Math.round(tresoFin * 100) / 100,
     });
 

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { calculerCotisationsDirigeant, calculerCoutEmployeur } from '../../utils/calculs-cotisations';
-import { Statut, TypeActivite } from '../../types';
+import type { Statut } from '../../types';
 
 describe('calculerCotisationsDirigeant', () => {
   it('micro vente_bic: 12.3% of CA', () => {

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { calculerSynthese, calculerCAMensuel, calculerChargesAnnuelles } from '../../utils/calculs';
 import { createEmptyPrevisionnel } from '../../utils/defaults';
-import { Previsionnel } from '../../types';
+import type { Previsionnel } from '../../types';
 
 function makeTestData(): Previsionnel {
   const data = createEmptyPrevisionnel();
@@ -12,9 +12,9 @@ function makeTestData(): Previsionnel {
   ];
   data.ventes = { o1: Array(36).fill(5) };
   data.chargesFixes = [
-    { description: 'Loyer', montantAnnuel: 6000, evolutionAn2: 0.05, evolutionAn3: 0.05 },
+    { description: 'Loyer', montantAnnuel: 6000, evolutionAn2: 5, evolutionAn3: 5 },
   ];
-  data.remunerationDirigeant = { salaireBrutAnnuel: 30000, augmentationAnnuelle: 0.05 };
+  data.remunerationDirigeant = { salaireBrutAnnuel: 30000, augmentationAnnuelle: 5 };
   return data;
 }
 

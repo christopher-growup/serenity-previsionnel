@@ -1,4 +1,4 @@
-import { ChargeFix } from '../types';
+import type { ChargeFix } from '../types';
 
 export const CHARGES_SUGGESTIONS: Omit<ChargeFix, 'evolutionAn2' | 'evolutionAn3'>[] = [
   { description: 'Loyer et charges locatives', montantAnnuel: 0 },

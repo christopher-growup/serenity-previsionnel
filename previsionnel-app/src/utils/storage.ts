@@ -1,4 +1,4 @@
-import { Previsionnel } from '../types';
+import type { Previsionnel } from '../types';
 
 export const STORAGE_KEY = 'serenity-previsionnel';
 

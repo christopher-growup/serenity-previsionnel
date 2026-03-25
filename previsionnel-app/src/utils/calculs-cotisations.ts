@@ -1,4 +1,4 @@
-import { Statut, TypeActivite } from '../types';
+import type { Statut, TypeActivite } from '../types';
 import { BAREMES } from '../config/baremes';
 
 export function calculerCotisationsDirigeant(
@@ -6,25 +6,35 @@ export function calculerCotisationsDirigeant(
   typeActivite: TypeActivite,
   baseCA: number,
   salaireBrut: number,
+  options?: { acre?: boolean; annee?: number },
 ): number {
+  let cotisations: number;
   switch (statut.statutJuridique) {
     case 'micro':
-      return baseCA * BAREMES.cotisationsMicro[typeActivite];
+      cotisations = baseCA * BAREMES.cotisationsMicro[typeActivite];
+      break;
     case 'ei':
-      return baseCA * BAREMES.cotisationsEI;
+      cotisations = baseCA * BAREMES.cotisationsEI;
+      break;
     case 'eurl':
     case 'sarl': {
       const taux = statut.typeGerance === 'minoritaire'
         ? BAREMES.cotisationsGerantMinoritaire
         : BAREMES.cotisationsGerantMajoritaire;
-      return salaireBrut * taux;
+      cotisations = salaireBrut * taux;
+      break;
     }
     case 'sasu':
     case 'sas':
-      return salaireBrut * (BAREMES.cotisationsSASU_patronal + BAREMES.cotisationsSASU_salarial);
+      cotisations = salaireBrut * (BAREMES.cotisationsSASU_patronal + BAREMES.cotisationsSASU_salarial);
+      break;
     default:
-      return 0;
+      cotisations = 0;
   }
+  if (options?.acre && (options?.annee ?? 1) === 1) {
+    cotisations *= (1 - BAREMES.acre.tauxReduction);
+  }
+  return cotisations;
 }
 
 export function calculerCoutEmployeur(salaireBrut: number): number {

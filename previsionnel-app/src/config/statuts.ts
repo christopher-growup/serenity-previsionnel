@@ -1,4 +1,4 @@
-import { StatutJuridique } from '../types';
+import type { StatutJuridique } from '../types';
 
 export interface StatutInfo {
   id: StatutJuridique;

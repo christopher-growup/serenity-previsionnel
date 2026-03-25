@@ -1,4 +1,4 @@
-import { Investissement } from '../types';
+import type { Investissement } from '../types';
 
 export function calculerAmortissements(investissements: Investissement[]): [number, number, number] {
   const dotations: [number, number, number] = [0, 0, 0];

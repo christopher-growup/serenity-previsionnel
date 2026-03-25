@@ -1,4 +1,4 @@
-import { TypeActivite } from '../types';
+import type { TypeActivite } from '../types';
 import { BAREMES } from '../config/baremes';
 
 export function calculerIS(resultatAvantImpot: number): number {

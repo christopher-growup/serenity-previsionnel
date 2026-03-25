@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { calculerAmortissements } from '../../utils/calculs-amortissement';
-import { Investissement } from '../../types';
+import type { Investissement } from '../../types';
 
 describe('calculerAmortissements', () => {
   it('returns [0, 0, 0] for empty investments', () => {

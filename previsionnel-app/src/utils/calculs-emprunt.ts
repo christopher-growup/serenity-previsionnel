@@ -1,4 +1,4 @@
-import { Emprunt } from '../types';
+import type { Emprunt } from '../types';
 
 export interface MensualiteEmprunt {
   mois: number;
@@ -12,7 +12,7 @@ export function calculerTableauEmprunt(emprunt: Emprunt): MensualiteEmprunt[] {
   if (emprunt.montant === 0) return [];
 
   const { montant, dureeMois, tauxAnnuel } = emprunt;
-  const tauxMensuel = tauxAnnuel / 12;
+  const tauxMensuel = (tauxAnnuel / 100) / 12;
 
   let mensualite: number;
   if (tauxMensuel === 0) {

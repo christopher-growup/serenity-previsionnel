@@ -1,4 +1,4 @@
-import { Previsionnel } from '../types';
+import type { Previsionnel } from '../types';
 import { CHARGES_SUGGESTIONS } from '../config/charges-suggestions';
 
 export function createEmptyPrevisionnel(): Previsionnel {
