@@ -1,0 +1,9 @@
+# macOS
+.DS_Store
+
+# Excel files (reference only)
+*.xlsx
+
+# Node
+previsionnel-app/node_modules/
+previsionnel-app/dist/
