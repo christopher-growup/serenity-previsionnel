@@ -319,6 +319,7 @@ export function Step8Synthese({ data, synthese, onSave }: Props) {
             { label: 'Emprunts', values: moisData.map(t => -t.remboursementsEmprunts) },
             { label: 'Impôts', values: moisData.map(t => -t.decaissementsImpot) },
             ...(!isMicro ? [{ label: 'TVA à reverser', values: moisData.map(t => -t.tvaAReverser) }] : []),
+            { label: 'Variation', values: moisData.map(t => t.tresorerieFin - t.tresorerieDebut), colorFn: (v: number) => v >= 0 ? 'text-green-600' : 'text-red-500' },
             { label: 'Tréso. fin', values: moisData.map(t => t.tresorerieFin), bold: true, colorFn: (v) => v >= 0 ? 'text-green-700' : 'text-red-600' },
           ];
 
