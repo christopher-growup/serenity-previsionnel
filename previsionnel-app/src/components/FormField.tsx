@@ -45,7 +45,7 @@ const FormField: React.FC<FormFieldProps> = ({
           <input
             type={type}
             className={`${inputClasses} ${suffix ? 'pr-10' : ''}`}
-            value={value}
+            value={type === 'number' && (value === 0 || value === '0') ? '' : value}
             onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
           />

@@ -137,7 +137,7 @@ export function Step3Offres({ data, updateData }: Props) {
                   onChange={(v) =>
                     updateOffre(offre.id, 'delaiPaiementMois', parseInt(v, 10) || 0)
                   }
-                  placeholder="ex : 1"
+                  placeholder="0"
                   suffix="mois"
                 />
 
@@ -150,7 +150,7 @@ export function Step3Offres({ data, updateData }: Props) {
                   onChange={(v) =>
                     updateOffre(offre.id, 'acomptePourcent', parseFloat(v) || 0)
                   }
-                  placeholder="ex : 30"
+                  placeholder="0"
                   suffix="%"
                 />
               </div>
