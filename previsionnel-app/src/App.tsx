@@ -9,6 +9,7 @@ import Sidebar from './components/Sidebar';
 import WelcomeScreen from './components/WelcomeScreen';
 import Tutorial from './components/Tutorial';
 import { SaveReminder } from './components/SaveReminder';
+import { HelpPage } from './components/HelpPage';
 import { Step1Project } from './steps/Step1Project';
 import { Step2Statut } from './steps/Step2Statut';
 import { Step3Offres } from './steps/Step3Offres';
@@ -18,7 +19,7 @@ import { Step6Charges } from './steps/Step6Charges';
 import { Step7Remuneration } from './steps/Step7Remuneration';
 import { Step8Synthese } from './steps/Step8Synthese';
 
-type Screen = 'welcome' | 'tutorial' | 'wizard';
+type Screen = 'welcome' | 'tutorial' | 'wizard' | 'help';
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('welcome');
@@ -82,11 +83,15 @@ export default function App() {
   };
 
   if (screen === 'welcome') {
-    return <WelcomeScreen hasExistingData={hasExistingData} onNew={handleNew} onResume={handleResume} onImport={handleImport} />;
+    return <WelcomeScreen hasExistingData={hasExistingData} onNew={handleNew} onResume={handleResume} onImport={handleImport} onHelp={() => setScreen('help')} />;
   }
 
   if (screen === 'tutorial') {
     return <Tutorial onComplete={() => setScreen('wizard')} />;
+  }
+
+  if (screen === 'help') {
+    return <HelpPage onClose={() => setScreen(hasExistingData ? 'wizard' : 'welcome')} />;
   }
 
   const stepComponents: Record<number, React.ReactNode> = {
@@ -115,6 +120,7 @@ export default function App() {
         onPrevious={() => goToStep(data.etapeCourante - 1)}
         onNext={() => goToStep(data.etapeCourante + 1)}
         onSave={handleSave}
+        onHelp={() => setScreen('help')}
       />
     </div>
   );

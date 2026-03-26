@@ -5,6 +5,7 @@ interface WelcomeScreenProps {
   onNew: () => void;
   onResume: () => void;
   onImport: (file: File) => void;
+  onHelp: () => void;
 }
 
 export default function WelcomeScreen({
@@ -12,6 +13,7 @@ export default function WelcomeScreen({
   onNew,
   onResume,
   onImport,
+  onHelp,
 }: WelcomeScreenProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -83,7 +85,17 @@ export default function WelcomeScreen({
             />
           </label>
         </div>
-        <p className="mt-8 text-xs text-gray-400" style={{ fontFamily: "'Lato', sans-serif" }}>
+        <button
+          onClick={onHelp}
+          className="mt-4 flex items-center gap-2 text-sm text-white/60 hover:text-[#be9f56] transition-colors"
+          style={{ fontFamily: "'Poppins', sans-serif" }}
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Besoin d'aide ? Consultez le guide d'utilisation
+        </button>
+        <p className="mt-4 text-xs text-gray-400" style={{ fontFamily: "'Lato', sans-serif" }}>
           Conçu par <a href="https://growup-consulting.fr" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#be9f56] transition-colors underline">Grow Up Consulting</a> pour Serenity Institut
         </p>
       </div>
