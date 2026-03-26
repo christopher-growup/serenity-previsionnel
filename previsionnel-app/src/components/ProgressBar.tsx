@@ -19,7 +19,7 @@ const STEPS = [
 const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep, onStepClick }) => {
   return (
     <div className="w-full px-4 py-4 bg-[#082742] border-b border-[#0d3a5c]">
-      <div className="flex items-center justify-between max-w-5xl mx-auto overflow-x-auto">
+      <div className="flex items-center justify-between max-w-5xl mx-auto overflow-hidden">
         {STEPS.map((label, index) => {
           const step = index + 1;
           const isCompleted = step < currentStep;
