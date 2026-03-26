@@ -13,7 +13,7 @@ export function Step3Offres({ data, updateData }: Props) {
   const addOffre = () => {
     if (data.offres.length >= 10) return;
     const newOffre: Offre = {
-      id: crypto.randomUUID(),
+      id: Math.random().toString(36).slice(2) + Date.now().toString(36),
       nom: '',
       prixUnitaireHT: 0,
       delaiPaiementMois: 0,
