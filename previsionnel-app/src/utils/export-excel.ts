@@ -2,6 +2,7 @@ import XLSX from 'xlsx-js-style';
 import type { Previsionnel, Synthese } from '../types';
 import { calculerCotisationsDirigeant, calculerCoutEmployeur } from './calculs-cotisations';
 import { getLabelsNomsMois } from './mois';
+import { saveFileWithDialog } from './download';
 
 function r(n: number): number {
   return Math.round(n * 100) / 100;
@@ -177,7 +178,7 @@ function applyDefaultStyles(
 
 // ─── Main export function ─────────────────────────────────────────────────────
 
-export function generateExcel(data: Previsionnel, synthese: Synthese): void {
+export async function generateExcel(data: Previsionnel, synthese: Synthese): Promise<void> {
   const wb = XLSX.utils.book_new();
   const moisLabels36 = getLabelsNomsMois(data.projet.dateCreationEnvisagee, 'court');
 
@@ -589,7 +590,9 @@ export function generateExcel(data: Previsionnel, synthese: Synthese): void {
     XLSX.utils.book_append_sheet(wb, ws, 'Trésorerie');
   }
 
-  // ─── Download ─────────────────────────────────────────────────────────────
-  const filename = `Previsionnel-${data.projet.nomPorteur.replace(/\s+/g, '-')}.xlsx`;
-  XLSX.writeFile(wb, filename);
+  // ─── Download with "Save As" dialog ──────────────────────────────────────
+  const filename = `Previsionnel-${(data.projet.nomPorteur || 'SansNom').replace(/\s+/g, '-')}.xlsx`;
+  const wbOut = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+  const blob = new Blob([wbOut], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  await saveFileWithDialog(blob, filename, 'Fichier Excel', { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] });
 }

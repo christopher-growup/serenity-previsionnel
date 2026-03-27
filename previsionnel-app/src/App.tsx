@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import type { Previsionnel, Synthese } from './types';
 import { createEmptyPrevisionnel } from './utils/defaults';
 import { saveTolocalStorage, loadFromLocalStorage, exportToFile, importFromFile, clearLocalStorage } from './utils/storage';
+import { saveFileWithDialog } from './utils/download';
 import { calculerSynthese } from './utils/calculs';
 import ProgressBar from './components/ProgressBar';
 import { ActionBar } from './components/ActionBar';
@@ -64,15 +65,10 @@ export default function App() {
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const { filename, content } = exportToFile(data);
     const blob = new Blob([content], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
+    await saveFileWithDialog(blob, filename, 'Fichier Prévisionnel', { 'application/json': ['.previsionnel'] });
     setShowSaveReminder(false);
   };
 

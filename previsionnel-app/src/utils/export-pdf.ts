@@ -2,6 +2,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import type { Previsionnel, Synthese } from '../types';
 import { getLabelsNomsMois } from './mois';
+import { saveFileWithDialog } from './download';
 
 const BRAND_COLOR: [number, number, number] = [41, 98, 136];
 const LIGHT_GRAY: [number, number, number] = [245, 245, 245];
@@ -504,7 +505,7 @@ function addIndicateurs(doc: jsPDF, synthese: Synthese, data: Previsionnel): voi
   void data; // suppress unused warning — data available for future use
 }
 
-export function generatePDF(data: Previsionnel, synthese: Synthese): void {
+export async function generatePDF(data: Previsionnel, synthese: Synthese): Promise<void> {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
   // Page 1: Page de garde
@@ -533,7 +534,8 @@ export function generatePDF(data: Previsionnel, synthese: Synthese): void {
   // Add header/footer to all pages
   addHeaderFooter(doc, data.projet.nomSociete);
 
-  // Save
-  const filename = `Previsionnel-${data.projet.nomPorteur.replace(/\s+/g, '-')}.pdf`;
-  doc.save(filename);
+  // Save with "Save As" dialog
+  const filename = `Previsionnel-${(data.projet.nomPorteur || 'SansNom').replace(/\s+/g, '-')}.pdf`;
+  const blob = doc.output('blob');
+  await saveFileWithDialog(blob, filename, 'Document PDF', { 'application/pdf': ['.pdf'] });
 }
